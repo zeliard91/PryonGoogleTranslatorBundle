@@ -1,0 +1,28 @@
+{
+    "name": "zeliard91/google-translator-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony 2 service designed to work with Google Translate API",
+    "keywords": [ "zeliard91", "translate", "google", "API"],
+    "homepage": "https://github.com/zeliard91/PryonGoogleTranslatorBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Damien Matabon",
+            "homepage": "http://www.pryon.org/",
+            "email": "damien.matabon@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.3",
+        "ext-curl": "*",
+        "symfony/framework-bundle": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-0": { "Pryon\\GoogleTranslatorBundle": "" }
+    },
+    "target-dir": "Pryon/GoogleTranslatorBundle"
+}
