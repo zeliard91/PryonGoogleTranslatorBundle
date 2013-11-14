@@ -14,6 +14,8 @@
     <services>
         <service id="pryon.google.translator" class="%pryon_google_translator.translator.class%">
             <argument>%pryon_google_translator.google_api_key%</argument>
+            <argument type="service" id="logger" />
+            <tag name="monolog.logger" channel="pryon_translator" />
         </service>
 
         <service id="form.type.translatorlanguage" class="%pryon_google_translator.translatorlanguage.class%">

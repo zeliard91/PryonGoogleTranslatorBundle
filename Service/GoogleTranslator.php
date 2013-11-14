@@ -2,6 +2,8 @@
 
 namespace Pryon\GoogleTranslatorBundle\Service;
 
+use Symfony\Bridge\Monolog\Logger;
+
 class GoogleTranslator
 {
     
@@ -23,11 +25,17 @@ class GoogleTranslator
     private $supported_languages = null;
 
     /**
+     * @var Symfony\Bridge\Monolog\Logger
+     */
+    private $logger;
+
+    /**
      * Constructor
      * @param string $api_key [description]
      */
-    public function __construct($api_key)
+    public function __construct($api_key, Logger $logger)
     {
+        $this -> logger =$logger;
         $this -> api_key = $api_key;
     }
 
@@ -59,14 +67,17 @@ class GoogleTranslator
                 $query_params = preg_replace('/q\_[0-9]+\=/','q=', $query_params);
                 
                 unset($params['q']);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params).'&'.$query_params);
+                $post_fields = http_build_query($params).'&'.$query_params;
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+                $this -> logger -> debug('call POST '.$url.' with params : '.$post_fields);
             }
         }
         else
         {
             $url .= '?'.http_build_query($params);
+            $this -> logger -> debug('call GET '.$url);
         }
-        
+
         // cURL configuration
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -87,6 +98,7 @@ class GoogleTranslator
         $json_response = json_decode($response);
         if (is_null($json_response))
         {
+            $this -> logger -> error("Unable to decode response : ".$response);
             throw new \Exception("Unable to decode response : ".$response);
         }
         if (!isset($json_response -> data))
@@ -95,6 +107,7 @@ class GoogleTranslator
             {
                 throw new \Exception('Translator Error ('.$json_response -> error -> code.') : '.$json_response -> error -> message);
             }
+            $this -> logger -> error("Unable to find data in response : ".print_r($response, true));
             throw new \Exception("Unable to find data in response");
         }
         
