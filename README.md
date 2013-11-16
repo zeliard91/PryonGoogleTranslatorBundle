@@ -55,7 +55,7 @@ public function registerBundles()
 ### Step3: Add your Google API Key in configuration
 
 ``` yaml
-# app/config/routing.yml
+# app/config/config.yml
 
 pryon_google_translator:
     google_api_key: MySecretKey
@@ -108,3 +108,23 @@ It is basically the same as the core "language" Form Type except from the choice
         'required' => true,
         'label'    => 'Source language'
     ))
+```
+
+## Cache
+
+You can cache the responses of the API with [one of subclass of Doctrine\Common\Cache\CacheProvider](https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache)
+
+This can be done by specifying what you want to cache and with what in the configuration file.
+This is the default configuration :
+
+``` yaml
+# app/config/config.yml
+
+pryon_google_translator:
+    cache_provider: Doctrine\Common\Cache\ArrayCache
+    cache_calls:
+        # get available languages method
+        languages: true
+        # translate method
+        translate: false
+```

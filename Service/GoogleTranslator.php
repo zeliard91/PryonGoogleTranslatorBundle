@@ -10,6 +10,18 @@ class GoogleTranslator
     // Google API Key
     private $api_key;
 
+    /**
+     * Cache Provider
+     * @var Doctrine\Common\Cache\CacheProvider
+     */
+    private $cache_provider;
+
+    /**
+     * API methods to cache
+     * @var array
+     */
+    private $cache_calls;
+
     // Base URL
     const url = 'https://www.googleapis.com/language/translate/v2';
 
@@ -37,6 +49,60 @@ class GoogleTranslator
     {
         $this -> logger =$logger;
         $this -> api_key = $api_key;
+    }
+
+    
+    public function setCache($cache_provider, $cache_calls)
+    {
+        if (!$cache_provider instanceof \Doctrine\Common\Cache\CacheProvider)
+        {
+            throw new \Exception('Cache Provider must be a subclass of Doctrine\Common\Cache\CacheProvider');
+        }
+        $this -> cache_provider = $cache_provider;
+        $this -> cache_provider -> setNamespace('pryon_translator');
+        $this -> cache_calls = $cache_calls;
+    }
+
+    /**
+     * Return value store in cache for method and params
+     * @param  string $method [description]
+     * @param  array  $params [description]
+     * @return mixed   (null if method is not cached or value is not in cache)
+     */
+    protected function getCacheValue($method, $params = array())
+    {
+        if (!isset($this -> cache_calls[$method]) || $this -> cache_calls[$method] !== true)
+        {
+            return null;
+        }
+        $id = $this -> getCacheId($method, $params);
+        return ($this -> cache_provider -> contains($id)) ? $this -> cache_provider -> fetch($id) : null;
+    }
+
+    /**
+     * Get object cache id for method + params
+     * @param  string $method 
+     * @param  array  $params [description]
+     * @return string
+     */
+    protected function getCacheId($method, $params = array())
+    {
+        return $method.'_'.md5(http_build_query($params));
+    }
+
+    /**
+     * save value in cache
+     * @param string $method 
+     * @param mixed $value  
+     * @param boolean
+     */
+    protected function setCacheValue($method, $value, $params = array())
+    {
+        if (!isset($this -> cache_calls[$method]) || $this -> cache_calls[$method] !== true)
+        {
+            return null;
+        }
+        return $this -> cache_provider -> save($this -> getCacheId($method, $params), $value);
     }
 
     /**
@@ -120,6 +186,7 @@ class GoogleTranslator
      */
     public function getSupportedLanguages()
     {
+        $this -> supported_languages = $this -> getCacheValue('languages');
         if (is_null($this -> supported_languages))
         {
             $response = $this -> call('/languages');
@@ -133,6 +200,7 @@ class GoogleTranslator
                 $languages[] = $language -> language;
             }
             $this -> supported_languages = $languages;
+            $this -> setCacheValue('languages', $this -> supported_languages);
         }
         return $this -> supported_languages;
     }
@@ -187,21 +255,26 @@ class GoogleTranslator
      */
     private function handleTranslateResponse($source, $target, $text, $method = 'GET')
     {
-        $response = $this -> call('', array(
-                'source' => $source,
-                'target' => $target,
-                'q'      => $text,
-                ),
-                $method
-            );
-        if (!isset($response -> translations))
+        $results = $this -> getCacheValue('translate', array($source, $target, $text, $method));
+        if (is_null($results))
         {
-            throw new \Exception("Unable to find translations");
-        }
-        $results = array();
-        foreach($response -> translations as $translations)
-        {
-            $results[] = $translations -> translatedText;
+            $response = $this -> call('', array(
+                    'source' => $source,
+                    'target' => $target,
+                    'q'      => $text,
+                    ),
+                    $method
+                );
+            if (!isset($response -> translations))
+            {
+                throw new \Exception("Unable to find translations");
+            }
+            $results = array();
+            foreach($response -> translations as $translations)
+            {
+                $results[] = $translations -> translatedText;
+            }
+            $this -> setCacheValue('translate', $results, array($source, $target, $text, $method));
         }
         return $results;
     }

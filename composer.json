@@ -16,7 +16,8 @@
     "require": {
         "php": ">=5.3.3",
         "ext-curl": "*",
-        "symfony/framework-bundle": "2.*"
+        "symfony/framework-bundle": "2.*",
+        "doctrine/cache": "1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "*"

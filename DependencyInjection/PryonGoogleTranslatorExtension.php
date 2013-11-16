@@ -25,5 +25,7 @@ class PryonGoogleTranslatorExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
         $container->setParameter('pryon_google_translator.google_api_key', $config['google_api_key']);
+        $container->setParameter('pryon_google_translator.cache_provider_class', $config['cache_provider']);
+        $container->setParameter('pryon_google_translator.cache_calls', $config['cache_calls']);
     }
 }

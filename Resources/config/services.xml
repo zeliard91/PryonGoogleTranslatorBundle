@@ -9,13 +9,21 @@
         <parameter key="pryon_google_translator.translator.class">Pryon\GoogleTranslatorBundle\Service\GoogleTranslator</parameter>
         <parameter key="pryon_google_translator.translatorlanguage.class">Pryon\GoogleTranslatorBundle\Form\Type\LanguageType</parameter>
         <parameter key="pryon_google_translator.google_api_key" />
+        <parameter key="pryon_google_translator.cache_provider_class">Doctrine\Common\Cache\ArrayCache</parameter>
+        <parameter key="pryon_google_translator.cache_calls" />
     </parameters>
 
     <services>
+        <service id="pryon.google.translator.cache_provider" class="%pryon_google_translator.cache_provider_class%" />
+
         <service id="pryon.google.translator" class="%pryon_google_translator.translator.class%">
             <argument>%pryon_google_translator.google_api_key%</argument>
             <argument type="service" id="logger" />
             <tag name="monolog.logger" channel="pryon_translator" />
+            <call method="setCache">
+                <argument type="service" id="pryon.google.translator.cache_provider" />
+                <argument>%pryon_google_translator.cache_calls%</argument>
+            </call>
         </service>
 
         <service id="form.type.translatorlanguage" class="%pryon_google_translator.translatorlanguage.class%">
