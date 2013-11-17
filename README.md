@@ -1,6 +1,7 @@
 PryonGoogleTranslatorBundle
 ======================
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/c394a83b-6c4a-43d6-ad54-fe379a12a297/big.png)](https://insight.sensiolabs.com/projects/c394a83b-6c4a-43d6-ad54-fe379a12a297)
 [![Build Status](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle.png)](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle)
 
 This bundle provides a symfony 2 service to interact with Google Translate API.
