@@ -1,6 +1,8 @@
 PryonGoogleTranslatorBundle
 ======================
 
+[![Build Status](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle.png)](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle)
+
 This bundle provides a symfony 2 service to interact with Google Translate API.
 https://developers.google.com/translate/v2/getting_started
 
