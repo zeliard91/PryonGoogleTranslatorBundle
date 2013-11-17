@@ -3,4 +3,15 @@ framework:
     test: ~
 
 pryon_google_translator:
-    google_api_key: ~
+    google_api_key: "%pryontranslator.googleapi%"
+
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      nested
+        nested:
+            type:  stream
+            path:  %kernel.logs_dir%/%kernel.environment%.log
+            level: debug

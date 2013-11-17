@@ -4,6 +4,9 @@ php:
   - 5.3
   - 5.4
 
+env:
+  - secure: "MkJsLaqELo8jcY3d2b2xb1z4lztsgyE2+HhPtjAwrK8oM/Vl06q4/TC/j/mETauz14ShP4GdPLECxvj3vR9Id0KhclI9EtQM2Q7un9UDo1O3xeEw0QnhHrQIoiUe1LSkZIB8QIMFrwoGfSNv7A1GyuBmk0SiXOAjb7CXdl/1eOo="
+
 before_script:
   - composer install
 
