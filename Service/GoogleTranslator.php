@@ -149,17 +149,26 @@ class GoogleTranslator
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-
-        // Get responses
+        // Get response
         $response = curl_exec($ch);
+        // Closing cURL session
+        curl_close($ch);
+
+        return $this -> handlingCallResponse($response);
+    }
+
+    
+    /**
+     * Handling curl response
+     * @param  mixed $response curl response
+     * @return mixed           array or string
+     */
+    private function handlingCallResponse($response)
+    {
         if ($response === false)
         {
             throw new \Exception("Unable to get curl content");
         }
-
-        // Closing cURL session
-        curl_close($ch);
-
         // Decoding responses
         $json_response = json_decode($response);
         if (is_null($json_response))
