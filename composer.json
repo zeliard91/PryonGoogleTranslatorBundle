@@ -17,10 +17,8 @@
         "php": ">=5.3.3",
         "ext-curl": "*",
         "symfony/framework-bundle": "2.*",
+        "symfony/monolog-bundle": "2.3.*",
         "doctrine/cache": "1.*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*"
     },
     "autoload": {
         "psr-0": { "Pryon\\GoogleTranslatorBundle": "" }

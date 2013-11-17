@@ -1,0 +1,6 @@
+framework:
+    secret: secret
+    test: ~
+
+pryon_google_translator:
+    google_api_key: ~
