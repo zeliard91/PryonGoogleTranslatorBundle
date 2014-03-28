@@ -23,16 +23,16 @@ class GoogleTranslator
     private $cache_calls;
 
     // Base URL
-    const url = 'https://www.googleapis.com/language/translate/v2';
+    const URL = 'https://www.googleapis.com/language/translate/v2';
 
     // Limit query by POST
-    const post_query_limit_size = 5000;
+    const POST_QUERY_LIMIT_SIZE = 5000;
 
     // POST init size with all required params
-    const post_query_init_size = 66;
+    const POST_QUERY_INIT_SIZE = 66;
 
     // POST init size with all required params
-    const nb_max_segments = 128;
+    const NB_MAX_SEGMENTS = 128;
 
     private $supported_languages = null;
 
@@ -47,20 +47,19 @@ class GoogleTranslator
      */
     public function __construct($api_key, Logger $logger)
     {
-        $this -> logger =$logger;
-        $this -> api_key = $api_key;
+        $this->logger =$logger;
+        $this->api_key = $api_key;
     }
 
     
     public function setCache($cache_provider, $cache_calls)
     {
-        if (!$cache_provider instanceof \Doctrine\Common\Cache\CacheProvider)
-        {
+        if (!$cache_provider instanceof \Doctrine\Common\Cache\CacheProvider) {
             throw new \Exception('Cache Provider must be a subclass of Doctrine\Common\Cache\CacheProvider');
         }
-        $this -> cache_provider = $cache_provider;
-        $this -> cache_provider -> setNamespace('pryon_translator');
-        $this -> cache_calls = $cache_calls;
+        $this->cache_provider = $cache_provider;
+        $this->cache_provider->setNamespace('pryon_translator');
+        $this->cache_calls = $cache_calls;
     }
 
     /**
@@ -71,12 +70,11 @@ class GoogleTranslator
      */
     protected function getCacheValue($method, $params = array())
     {
-        if (!isset($this -> cache_calls[$method]) || $this -> cache_calls[$method] !== true)
-        {
+        if (!isset($this->cache_calls[$method]) || $this->cache_calls[$method] !== true) {
             return null;
         }
-        $id = $this -> getCacheId($method, $params);
-        return ($this -> cache_provider -> contains($id)) ? $this -> cache_provider -> fetch($id) : null;
+        $id = $this->getCacheId($method, $params);
+        return ($this->cache_provider->contains($id)) ? $this->cache_provider->fetch($id) : null;
     }
 
     /**
@@ -98,11 +96,10 @@ class GoogleTranslator
      */
     protected function setCacheValue($method, $value, $params = array())
     {
-        if (!isset($this -> cache_calls[$method]) || $this -> cache_calls[$method] !== true)
-        {
+        if (!isset($this->cache_calls[$method]) || $this->cache_calls[$method] !== true) {
             return null;
         }
-        return $this -> cache_provider -> save($this -> getCacheId($method, $params), $value);
+        return $this->cache_provider->save($this->getCacheId($method, $params), $value);
     }
 
     /**
@@ -114,34 +111,29 @@ class GoogleTranslator
     {
         // Init cURL resource
         $ch = curl_init();
-        if ($ch === false)
-        {
+        if ($ch === false) {
             throw new \Exception("Unable to init curl session");
         }
         
-        $url = self::url . $fonction;
-        $params['key'] = $this -> api_key;
+        $url = self::URL . $fonction;
+        $params['key'] = $this->api_key;
         
-        if ($method == 'POST')
-        {
-            curl_setopt($ch, CURLOPT_POST, true); 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-HTTP-Method-Override: GET') );
-            if (isset($params['q']))
-            {
+        if ($method == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-HTTP-Method-Override: GET'));
+            if (isset($params['q'])) {
                 // All the texts must be sent as the query 'q'
                 $query_params = http_build_query($params['q'], 'q_');
-                $query_params = preg_replace('/q\_[0-9]+\=/','q=', $query_params);
+                $query_params = preg_replace('/q\_[0-9]+\=/', 'q=', $query_params);
                 
                 unset($params['q']);
                 $post_fields = http_build_query($params).'&'.$query_params;
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
-                $this -> logger -> debug('call POST '.$url.' with params : '.$post_fields);
+                $this->logger->debug('call POST '.$url.' with params : '.$post_fields);
             }
-        }
-        else
-        {
+        } else {
             $url .= '?'.http_build_query($params);
-            $this -> logger -> debug('call GET '.$url);
+            $this->logger->debug('call GET '.$url);
         }
 
         // cURL configuration
@@ -154,7 +146,7 @@ class GoogleTranslator
         // Closing cURL session
         curl_close($ch);
 
-        return $this -> handlingCallResponse($response);
+        return $this->handlingCallResponse($response);
     }
 
     
@@ -165,28 +157,26 @@ class GoogleTranslator
      */
     private function handlingCallResponse($response)
     {
-        if ($response === false)
-        {
+        if ($response === false) {
             throw new \Exception("Unable to get curl content");
         }
         // Decoding responses
         $json_response = json_decode($response);
-        if (is_null($json_response))
-        {
-            $this -> logger -> error("Unable to decode response : ".$response);
+        if (is_null($json_response)) {
+            $this->logger->error("Unable to decode response : ".$response);
             throw new \Exception("Unable to decode response : ".$response);
         }
-        if (!isset($json_response -> data))
-        {
-            if (isset($json_response -> error, $json_response -> error -> message))
-            {
-                throw new \Exception('Translator Error ('.$json_response -> error -> code.') : '.$json_response -> error -> message);
+        if (!isset($json_response->data)) {
+            if (isset($json_response->error, $json_response->error->message)) {
+                throw new \Exception(
+                    'Translator Error ('.$json_response->error->code.') : '.$json_response->error->message
+                );
             }
-            $this -> logger -> error("Unable to find data in response : ".print_r($response, true));
+            $this->logger->error("Unable to find data in response : ".print_r($response, true));
             throw new \Exception("Unable to find data in response");
         }
         
-        return $json_response -> data;
+        return $json_response->data;
     }
     
     /**
@@ -195,23 +185,20 @@ class GoogleTranslator
      */
     public function getSupportedLanguages()
     {
-        $this -> supported_languages = $this -> getCacheValue('languages');
-        if (is_null($this -> supported_languages))
-        {
-            $response = $this -> call('/languages');
-            if (!isset($response -> languages))
-            {
+        $this->supported_languages = $this->getCacheValue('languages');
+        if (is_null($this->supported_languages)) {
+            $response = $this->call('/languages');
+            if (!isset($response->languages)) {
                 throw new \Exception("Unable to find languages");
             }
             $languages = array();
-            foreach ($response -> languages as $language)
-            {
-                $languages[] = $language -> language;
+            foreach ($response->languages as $language) {
+                $languages[] = $language->language;
             }
-            $this -> supported_languages = $languages;
-            $this -> setCacheValue('languages', $this -> supported_languages);
+            $this->supported_languages = $languages;
+            $this->setCacheValue('languages', $this->supported_languages);
         }
-        return $this -> supported_languages;
+        return $this->supported_languages;
     }
 
     /**
@@ -223,32 +210,26 @@ class GoogleTranslator
      */
     public function translate($source, $target, $text)
     {
-        if (!is_array($text))
-        {
-            $results = $this -> handleTranslateResponse($source, $target, $text);
-        }
-        else
-        {
+        if (!is_array($text)) {
+            $results = $this->handleTranslateResponse($source, $target, $text);
+        } else {
             $results = array();
-            $size    = self::post_query_init_size;
+            $size    = self::POST_QUERY_INIT_SIZE;
             $nb_text = count($text);
             $texts = array();
-            for ($i = 0 ; $i < $nb_text ; $i++)
-            {
+            for ($i = 0; $i < $nb_text; $i++) {
                 $size += mb_strlen(urlencode($text[$i]))+3;
-                if ($size > self::post_query_limit_size || count($texts) == self::nb_max_segments)
-                {
+                if ($size > self::POST_QUERY_LIMIT_SIZE || count($texts) == self::NB_MAX_SEGMENTS) {
                     // Get response
-                    $results = array_merge($results, $this -> handleTranslateResponse($source, $target, $texts, 'POST'));
+                    $results = array_merge($results, $this->handleTranslateResponse($source, $target, $texts, 'POST'));
                    
                     $texts = array();
-                    $size  = self::post_query_init_size;
+                    $size  = self::POST_QUERY_INIT_SIZE;
                 }
                 $texts[] = $text[$i];
             }
-            if ($size > self::post_query_init_size)
-            {
-                $results = array_merge($results, $this -> handleTranslateResponse($source, $target, $texts, 'POST'));
+            if ($size > self::POST_QUERY_INIT_SIZE) {
+                $results = array_merge($results, $this->handleTranslateResponse($source, $target, $texts, 'POST'));
             }
         }
         return (count($results) == 1) ? $results[0] : $results;
@@ -264,26 +245,25 @@ class GoogleTranslator
      */
     private function handleTranslateResponse($source, $target, $text, $method = 'GET')
     {
-        $results = $this -> getCacheValue('translate', array($source, $target, $text, $method));
-        if (is_null($results))
-        {
-            $response = $this -> call('', array(
+        $results = $this->getCacheValue('translate', array($source, $target, $text, $method));
+        if (is_null($results)) {
+            $response = $this->call(
+                '',
+                array(
                     'source' => $source,
                     'target' => $target,
                     'q'      => $text,
-                    ),
-                    $method
-                );
-            if (!isset($response -> translations))
-            {
+                ),
+                $method
+            );
+            if (!isset($response->translations)) {
                 throw new \Exception("Unable to find translations");
             }
             $results = array();
-            foreach($response -> translations as $translations)
-            {
-                $results[] = $translations -> translatedText;
+            foreach ($response->translations as $translations) {
+                $results[] = $translations->translatedText;
             }
-            $this -> setCacheValue('translate', $results, array($source, $target, $text, $method));
+            $this->setCacheValue('translate', $results, array($source, $target, $text, $method));
         }
         return $results;
     }

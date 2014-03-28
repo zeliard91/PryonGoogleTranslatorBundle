@@ -18,7 +18,7 @@ class LanguageType extends AbstractType
 
     public function __construct(GoogleTranslator $Translator)
     {
-        $this -> Translator = $Translator;
+        $this->Translator = $Translator;
     }
 
     /**
@@ -27,20 +27,17 @@ class LanguageType extends AbstractType
      */
     private function getChoices()
     {
-        if (is_null($this -> choices))
-        {
-            $this -> choices = array();
-            foreach($this -> Translator -> getSupportedLanguages() as $language)
-            {
-                if (Intl::getLanguageBundle() -> getLanguageName($language) != '')
-                {
-                    $this -> choices[$language] = Intl::getLanguageBundle() -> getLanguageName($language);
+        if (is_null($this->choices)) {
+            $this->choices = array();
+            foreach ($this->Translator->getSupportedLanguages() as $language) {
+                if (Intl::getLanguageBundle()->getLanguageName($language) != '') {
+                    $this->choices[$language] = Intl::getLanguageBundle()->getLanguageName($language);
                 }
             }
             $collator = new \Collator(\Locale::getDefault());
-            $collator -> asort($this -> choices);
+            $collator->asort($this->choices);
         }
-        return $this -> choices;
+        return $this->choices;
     }
 
     /**
@@ -49,8 +46,7 @@ class LanguageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'choices' => $this -> getChoices(),
-            // 'choices' => array(),
+            'choices' => $this->getChoices()
         ));
     }
 

@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class GoogleTranslateCommandTest extends WebTestCase
 {
-    static $class = 'Pryon\GoogleTranslatorBundle\Tests\App\AppKernel';
+    protected static $class = 'Pryon\GoogleTranslatorBundle\Tests\App\AppKernel';
 
     private $translator;
 
@@ -43,13 +43,13 @@ class GoogleTranslateCommandTest extends WebTestCase
     public function testTranslations()
     {
         $source = "I love Symfony";
-        $attended = "J&#39;adore Symfony";
+        $attended = "J&#39;aime Symfony";
 
         $response = $this -> translator -> translate('en', 'fr', $source);
         $this -> assertEquals($attended, $response, 'Check string translation');
 
         $sources = array("I love Symfony", "I like PHP");
-        $attended = array("J&#39;adore Symfony", "J&#39;aime PHP");
+        $attended = array("J&#39;aime Symfony", "J&#39;aime PHP");
         
         $response = $this -> translator -> translate('en', 'fr', $sources);
         $this -> assertEquals($attended, $response, 'Check array translations');
