@@ -2,6 +2,7 @@ framework:
     secret: secret
     test: ~
 
+# export SYMFONY__PRYONTRANSLATOR__GOOGLEAPI=supasecretkey
 pryon_google_translator:
     google_api_key: "%pryontranslator.googleapi%"
 
