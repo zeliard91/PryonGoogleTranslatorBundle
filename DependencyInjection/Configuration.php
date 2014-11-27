@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->scalarNode('google_api_key')->isRequired()->end()
             ->scalarNode('cache_provider')->defaultValue('Doctrine\Common\Cache\ArrayCache')->end()
+            ->scalarNode('cache_arg')->defaultNull()->end()
             ->arrayNode('cache_calls')
                 ->addDefaultsIfNotSet()
                 ->children()

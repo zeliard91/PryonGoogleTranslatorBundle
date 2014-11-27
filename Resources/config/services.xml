@@ -10,11 +10,14 @@
         <parameter key="pryon_google_translator.translatorlanguage.class">Pryon\GoogleTranslatorBundle\Form\Type\LanguageType</parameter>
         <parameter key="pryon_google_translator.google_api_key" />
         <parameter key="pryon_google_translator.cache_provider_class">Doctrine\Common\Cache\ArrayCache</parameter>
+        <parameter key="pryon_google_translator.cache_arg" />
         <parameter key="pryon_google_translator.cache_calls" />
     </parameters>
 
     <services>
-        <service id="pryon.google.translator.cache_provider" class="%pryon_google_translator.cache_provider_class%" />
+        <service id="pryon.google.translator.cache_provider" class="%pryon_google_translator.cache_provider_class%">
+            <argument>%pryon_google_translator.cache_arg%</argument>
+        </service>
 
         <service id="pryon.google.translator" class="%pryon_google_translator.translator.class%">
             <argument>%pryon_google_translator.google_api_key%</argument>

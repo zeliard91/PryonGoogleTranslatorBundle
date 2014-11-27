@@ -124,7 +124,8 @@ This is the default configuration :
 # app/config/config.yml
 
 pryon_google_translator:
-    cache_provider: Doctrine\Common\Cache\ArrayCache
+    cache_provider: Doctrine\Common\Cache\PhpFileCache
+    cache_arg: /tmp
     cache_calls:
         # get available languages method
         languages: true

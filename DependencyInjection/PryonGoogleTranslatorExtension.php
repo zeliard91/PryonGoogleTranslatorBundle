@@ -27,5 +27,6 @@ class PryonGoogleTranslatorExtension extends Extension
         $container->setParameter('pryon_google_translator.google_api_key', $config['google_api_key']);
         $container->setParameter('pryon_google_translator.cache_provider_class', $config['cache_provider']);
         $container->setParameter('pryon_google_translator.cache_calls', $config['cache_calls']);
+        $container->setParameter('pryon_google_translator.cache_arg', $config['cache_arg']);
     }
 }
