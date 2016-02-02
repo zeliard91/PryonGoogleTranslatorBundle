@@ -3,14 +3,38 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
 
-env:
-  - secure: "MkJsLaqELo8jcY3d2b2xb1z4lztsgyE2+HhPtjAwrK8oM/Vl06q4/TC/j/mETauz14ShP4GdPLECxvj3vR9Id0KhclI9EtQM2Q7un9UDo1O3xeEw0QnhHrQIoiUe1LSkZIB8QIMFrwoGfSNv7A1GyuBmk0SiXOAjb7CXdl/1eOo="
+env: 
+  - SYMFONY_VERSION=2.3.*
+  - SYMFONY_VERSION=2.4.*
+  - SYMFONY_VERSION=2.5.*
+  - SYMFONY_VERSION=2.6.*
+  - SYMFONY_VERSION=2.7.*
+  - SYMFONY_VERSION=2.8.*
+  - SYMFONY_VERSION=3.0.*
 
-before_script:
-  - composer install
+matrix:
+  exclude:
+  - php: 5.3
+    env: SYMFONY_VERSION=3.0.*
+  - php: 5.4
+    env: SYMFONY_VERSION=3.0.*
 
-script: phpunit
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+before_install:
+  - composer self-update
+  - phpenv config-rm xdebug.ini || true
+  - composer require --no-update symfony/symfony:${SYMFONY_VERSION}
+
+install: composer update --prefer-dist --ignore-platform-reqs
+
+script: vendor/bin/phpunit
 
 notifications:
   email:
