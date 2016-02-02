@@ -2,7 +2,9 @@
 
 namespace Pryon\GoogleTranslatorBundle\Service;
 
-use Symfony\Bridge\Monolog\Logger;
+use Doctrine\Common\Cache\CacheProvider;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class GoogleTranslator
 {
@@ -38,26 +40,34 @@ class GoogleTranslator
     private $supported_languages = null;
 
     /**
-     * @var Symfony\Bridge\Monolog\Logger
+     * @var Symfony\Bridge\Monolog\LoggerInterface
      */
     private $logger;
 
     /**
      * Constructor.
      *
-     * @param string $api_key [description]
+     * @param string          $api_key Google API Key
+     * @param LoggerInterface $logger  Logger
      */
-    public function __construct($api_key, Logger $logger)
+    public function __construct($api_key, LoggerInterface $logger = null)
     {
         $this->logger = $logger;
         $this->api_key = $api_key;
+
+        if (null === $logger) {
+            $this->logger = new NullLogger();
+        }
     }
 
-    public function setCache($cache_provider, $cache_calls)
+    /**
+     * Define cache provider.
+     *
+     * @param CacheProvider $cache_provider
+     * @param array         $cache_calls
+     */
+    public function setCache(CacheProvider $cache_provider, array $cache_calls)
     {
-        if (!$cache_provider instanceof \Doctrine\Common\Cache\CacheProvider) {
-            throw new \Exception('Cache Provider must be a subclass of Doctrine\Common\Cache\CacheProvider');
-        }
         $this->cache_provider = $cache_provider;
         $this->cache_provider->setNamespace('pryon_translator');
         $this->cache_calls = $cache_calls;
@@ -85,7 +95,7 @@ class GoogleTranslator
      * Get object cache id for method + params.
      *
      * @param string $method
-     * @param array  $params [description]
+     * @param array  $params
      *
      * @return string
      */
@@ -99,7 +109,7 @@ class GoogleTranslator
      *
      * @param string $method
      * @param mixed  $value
-     * @param bool
+     * @param array  $params
      */
     protected function setCacheValue($method, $value, $params = array())
     {

@@ -115,7 +115,7 @@ It is basically the same as the core "language" Form Type except from the choice
 
 ## Cache
 
-You can cache the responses of the API with [one of subclass of Doctrine\Common\Cache\CacheProvider](https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache)
+You can cache the responses of the API with [one of the subclasses of Doctrine\Common\Cache\CacheProvider](https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache)
 
 This can be done by specifying what you want to cache and with what in the configuration file.
 This is the default configuration :
@@ -124,11 +124,13 @@ This is the default configuration :
 # app/config/config.yml
 
 pryon_google_translator:
-    cache_provider: Doctrine\Common\Cache\PhpFileCache
-    cache_arg: /tmp
-    cache_calls:
-        # get available languages method
-        languages: true
-        # translate method
-        translate: false
+    cache: 
+        # Specify your doctrine cache service
+        service: pryon.google.translator.array_cache_provider
+        # Define
+        cache_calls:
+            # get available languages method
+            languages: true
+            # translate method
+            translate: false
 ```

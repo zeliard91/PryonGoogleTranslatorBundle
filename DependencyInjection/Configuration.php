@@ -21,15 +21,19 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
             ->scalarNode('google_api_key')->isRequired()->end()
-            ->scalarNode('cache_provider')->defaultValue('Doctrine\Common\Cache\ArrayCache')->end()
-            ->scalarNode('cache_arg')->defaultNull()->end()
-            ->arrayNode('cache_calls')
+            ->arrayNode('cache')
                 ->addDefaultsIfNotSet()
                 ->children()
-                ->booleanNode('translate')->defaultFalse()->end()
-                ->booleanNode('languages')->defaultTrue()->end()
+                ->scalarNode('service')->defaultValue('pryon.google.translator.array_cache_provider')->end()
+                ->arrayNode('calls')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                    ->booleanNode('translate')->defaultFalse()->end()
+                    ->booleanNode('languages')->defaultTrue()->end()
+                    ->end()
                 ->end()
-            ->end();
+            ->end()
+            ;
 
         return $treeBuilder;
     }

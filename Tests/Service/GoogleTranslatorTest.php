@@ -15,9 +15,9 @@ class GoogleTranslatorTest extends WebTestCase
      */
     public function setUp()
     {
-        $kernel = $this->createKernel();
-        $kernel->boot();
-        $this->translator = $kernel->getContainer()->get('pryon.google.translator');
+        static::$kernel = static::createKernel();
+        static::$kernel->boot();
+        $this->translator = static::$kernel->getContainer()->get('pryon.google.translator');
     }
 
     /**
