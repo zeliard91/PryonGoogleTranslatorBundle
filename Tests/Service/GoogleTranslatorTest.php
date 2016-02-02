@@ -1,33 +1,33 @@
 <?php
+
 namespace Pryon\GoogleTranslatorBundle\Tests\Service;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Pryon\GoogleTranslatorBundle\Tests\App\AppKernel;
-use Symfony\Component\Yaml\Yaml;
 
-class GoogleTranslateCommandTest extends WebTestCase
+class GoogleTranslatorTest extends WebTestCase
 {
     protected static $class = 'Pryon\GoogleTranslatorBundle\Tests\App\AppKernel';
 
     private $translator;
 
     /**
-     * Init translator service for each test method
+     * Init translator service for each test method.
      */
     public function setUp()
     {
         $kernel = $this->createKernel();
-        $kernel -> boot();
-        $this -> translator = $kernel -> getContainer() -> get('pryon.google.translator');
+        $kernel->boot();
+        $this->translator = $kernel->getContainer()->get('pryon.google.translator');
     }
 
     /**
-     * Test get supported languages call
+     * Test get supported languages call.
+     *
      * @return [type] [description]
      */
     public function testLanguages()
     {
-        $languages = $this -> translator -> getSupportedLanguages();
+        $languages = $this->translator->getSupportedLanguages();
 
         $this->assertTrue(is_array($languages), 'Check that getSupportedLanguages response is an array');
 
@@ -37,21 +37,22 @@ class GoogleTranslateCommandTest extends WebTestCase
     }
 
     /**
-     * Test translations calls
+     * Test translations calls.
+     *
      * @return [type] [description]
      */
     public function testTranslations()
     {
-        $source = "I am not in danger";
-        $attended = "Je ne suis pas en danger";
+        $source = 'I am not in danger.';
+        $attended = 'Je ne suis pas en danger.';
 
-        $response = $this -> translator -> translate('en', 'fr', $source);
-        $this -> assertEquals($attended, $response, 'Check string translation');
+        $response = $this->translator->translate('en', 'fr', $source);
+        $this->assertEquals($attended, $response, 'Check string translation');
 
-        $sources = array("I am the one who knocks", "I am the danger");
-        $attended = array("Je suis celui qui frappe", "Je suis le danger");
-        
-        $response = $this -> translator -> translate('en', 'fr', $sources);
-        $this -> assertEquals($attended, $response, 'Check array translations');
+        $sources = array('I am the one who knocks.', 'I am the danger.');
+        $attended = array('Je suis celui qui frappe.', 'Je suis le danger.');
+
+        $response = $this->translator->translate('en', 'fr', $sources);
+        $this->assertEquals($attended, $response, 'Check array translations');
     }
 }
