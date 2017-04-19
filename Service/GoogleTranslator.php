@@ -45,15 +45,28 @@ class GoogleTranslator
     private $logger;
 
     /**
+     * @var string
+     */
+    private $referer;
+
+    /**
      * Constructor.
      *
-     * @param string          $api_key Google API Key
-     * @param LoggerInterface $logger  Logger
+     * @param string $api_key Google API Key
+     * @param LoggerInterface $logger Logger
+     * @param $scheme
+     * @param $host
+     * @param null $baseUrl
      */
-    public function __construct($api_key, LoggerInterface $logger = null)
+    public function __construct($api_key, LoggerInterface $logger = null, $scheme, $host, $baseUrl = null)
     {
         $this->logger = $logger;
         $this->api_key = $api_key;
+        $this->referer = $scheme.'://'.$host;
+
+        if ($baseUrl !== null) {
+            $this->referer .= $baseUrl;
+        }
 
         if (null === $logger) {
             $this->logger = new NullLogger();
@@ -160,6 +173,7 @@ class GoogleTranslator
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_REFERER, $this->referer);
 
         // Get response
         $response = curl_exec($ch);
