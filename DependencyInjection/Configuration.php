@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
             ->scalarNode('google_api_key')->isRequired()->end()
+            ->booleanNode('use_referer')->defaultFalse()->end()
             ->arrayNode('cache')
                 ->addDefaultsIfNotSet()
                 ->children()
