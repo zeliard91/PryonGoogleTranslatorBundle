@@ -52,28 +52,18 @@ class GoogleTranslator
     /**
      * @var bool
      */
-    private $use_referer;
+    private $use_referer = false;
 
     /**
      * Constructor.
      *
      * @param string $api_key Google API Key
      * @param LoggerInterface $logger Logger
-     * @param boolean $use_referer
-     * @param string $scheme
-     * @param string $host
-     * @param null $base_url
      */
-    public function __construct($api_key, LoggerInterface $logger = null, $use_referer = false, $scheme, $host, $base_url = null)
+    public function __construct($api_key, LoggerInterface $logger = null)
     {
         $this->logger = $logger;
         $this->api_key = $api_key;
-        $this->use_referer = $use_referer;
-        $this->referer = $scheme.'://'.$host;
-
-        if ($base_url !== null) {
-            $this->referer .= $base_url;
-        }
 
         if (null === $logger) {
             $this->logger = new NullLogger();
@@ -91,6 +81,24 @@ class GoogleTranslator
         $this->cache_provider = $cache_provider;
         $this->cache_provider->setNamespace('pryon_translator');
         $this->cache_calls = $cache_calls;
+    }
+
+    /**
+     * Define the referer
+     *
+     * @param bool        $use_referer
+     * @param string      $scheme
+     * @param string      $host
+     * @param string|null $base_url
+     */
+    public function setReferer($use_referer, $scheme, $host, $base_url = null)
+    {
+        $this->use_referer = $use_referer;
+        $this->referer = $scheme.'://'.$host;
+
+        if ($base_url !== null) {
+            $this->referer .= $base_url;
+        }
     }
 
     /**

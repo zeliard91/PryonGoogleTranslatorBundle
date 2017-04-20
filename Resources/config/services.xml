@@ -18,14 +18,16 @@
         <service id="pryon.google.translator" class="%pryon_google_translator.translator.class%">
             <argument>%pryon_google_translator.google_api_key%</argument>
             <argument type="service" id="logger" on-invalid="ignore" />
-            <argument>%pryon_google_translator.use_referer%</argument>
-            <argument>%router.request_context.scheme%</argument>
-            <argument>%router.request_context.host%</argument>
-            <argument>%router.request_context.base_url%</argument>
             <tag name="monolog.logger" channel="pryon_translator" />
             <call method="setCache">
                 <argument type="service" id="pryon.google.translator.cache_provider" />
                 <argument>%pryon_google_translator.cache_calls%</argument>
+            </call>
+            <call method="setReferer">
+                <argument>%pryon_google_translator.use_referer%</argument>
+                <argument>%router.request_context.scheme%</argument>
+                <argument>%router.request_context.host%</argument>
+                <argument>%router.request_context.base_url%</argument>
             </call>
         </service>
 
