@@ -23,6 +23,12 @@
                 <argument type="service" id="pryon.google.translator.cache_provider" />
                 <argument>%pryon_google_translator.cache_calls%</argument>
             </call>
+            <call method="setReferer">
+                <argument>%pryon_google_translator.use_referer%</argument>
+                <argument>%router.request_context.scheme%</argument>
+                <argument>%router.request_context.host%</argument>
+                <argument>%router.request_context.base_url%</argument>
+            </call>
         </service>
 
         <service id="form.type.translatorlanguage" class="%pryon_google_translator.translatorlanguage.class%">

@@ -45,10 +45,20 @@ class GoogleTranslator
     private $logger;
 
     /**
+     * @var string
+     */
+    private $referer;
+
+    /**
+     * @var bool
+     */
+    private $use_referer = false;
+
+    /**
      * Constructor.
      *
-     * @param string          $api_key Google API Key
-     * @param LoggerInterface $logger  Logger
+     * @param string $api_key Google API Key
+     * @param LoggerInterface $logger Logger
      */
     public function __construct($api_key, LoggerInterface $logger = null)
     {
@@ -71,6 +81,24 @@ class GoogleTranslator
         $this->cache_provider = $cache_provider;
         $this->cache_provider->setNamespace('pryon_translator');
         $this->cache_calls = $cache_calls;
+    }
+
+    /**
+     * Define the referer
+     *
+     * @param bool        $use_referer
+     * @param string      $scheme
+     * @param string      $host
+     * @param string|null $base_url
+     */
+    public function setReferer($use_referer, $scheme, $host, $base_url = null)
+    {
+        $this->use_referer = $use_referer;
+        $this->referer = $scheme.'://'.$host;
+
+        if ($base_url !== null) {
+            $this->referer .= $base_url;
+        }
     }
 
     /**
@@ -160,6 +188,10 @@ class GoogleTranslator
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        if ($this->use_referer) {
+            curl_setopt($ch, CURLOPT_REFERER, $this->referer);
+        }
 
         // Get response
         $response = curl_exec($ch);

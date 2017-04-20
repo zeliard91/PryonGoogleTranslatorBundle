@@ -69,7 +69,7 @@ pryon_google_translator:
 The bundle provides a service to your app in order to call the Google Translate 
 API in REST.
 
-### Exemples
+### Examples
 
 #### Get supported languages
 
@@ -133,4 +133,17 @@ pryon_google_translator:
             languages: true
             # translate method
             translate: false
+```
+
+
+### Referer (Optional) 
+
+When your API key has been set to HTTP-referer, enable the use of the referer header in the curl request.
+For example: something like example.com/* in the api key settings will work.
+
+``` yaml
+# app/config/config.yml
+
+pryon_google_translator:
+    use_referer: true
 ```
