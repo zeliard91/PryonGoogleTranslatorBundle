@@ -11,7 +11,7 @@ use Psr\Log\NullLogger;
 class GoogleTranslator
 {
     // Base URL
-    const URL = 'https://www.googleapis.com/language/translate/v2';
+    const URL = 'https://translation.googleapis.com/language/translate/v2';
 
     // Limit query by POST
     const POST_QUERY_LIMIT_SIZE = 5000;

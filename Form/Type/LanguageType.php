@@ -31,9 +31,11 @@ class LanguageType extends AbstractType
     {
         if (is_null($this->choices)) {
             $this->choices = array();
-            foreach ($this->Translator->getSupportedLanguages() as $language) {
-                if (Intl::getLanguageBundle()->getLanguageName($language) != '') {
-                    $this->choices[$language] = Intl::getLanguageBundle()->getLanguageName($language);
+            $supportedLanguages = $this->Translator->getSupportedLanguages();
+            $labelLanguages = Intl::getLanguageBundle()->getLanguageNames();
+            foreach ($supportedLanguages as $language) {
+                if (isset($labelLanguages[$language])) {
+                    $this->choices[$language] = $labelLanguages[$language];
                 }
             }
             $collator = new \Collator(\Locale::getDefault());

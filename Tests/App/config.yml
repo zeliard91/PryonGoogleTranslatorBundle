@@ -4,6 +4,7 @@ framework:
     translator: { fallback: en }
     default_locale:  en
     form: ~
+    session: ~
 
 # export SYMFONY__PRYONTRANSLATOR__GOOGLEAPI=supasecretkey
 pryon_google_translator:
