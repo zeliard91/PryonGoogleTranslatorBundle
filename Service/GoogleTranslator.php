@@ -154,7 +154,19 @@ class GoogleTranslator
             $clientParams['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 
-        $response = $this->client->request($method, self::URL.$fonction, $clientParams);
+        try {
+            $response = $this->client->request($method, self::URL.$fonction, $clientParams);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $this->logger->error('REST Exception', ['e' => $e, 'url' => self::URL.$fonction, 'params' => $clientParams]);
+            $message = $e->getResponse()->getReasonPhrase();
+
+            $json = json_decode($e->getResponse()->getBody());
+            if (null !== $json && isset($json->error, $json->error->message)) {
+                $message = $json->error->message;
+            }
+
+            throw new \Exception($message, $e->getCode());
+        }
 
         return $this->handlingCallResponse($response);
     }
