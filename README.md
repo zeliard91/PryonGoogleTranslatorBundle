@@ -4,11 +4,11 @@ PryonGoogleTranslatorBundle
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/c394a83b-6c4a-43d6-ad54-fe379a12a297/big.png)](https://insight.sensiolabs.com/projects/c394a83b-6c4a-43d6-ad54-fe379a12a297)
 [![Build Status](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle.png)](https://travis-ci.org/zeliard91/PryonGoogleTranslatorBundle)
 
-This bundle provides a symfony 2 service to interact with Google Translate API.
+This bundle provides a symfony service to interact with Google Translate API.
 https://developers.google.com/translate/v2/getting_started
 
 To be able to translate sentences, you have to enable billing on your Google 
-Cloud Console https://developers.google.com/translate/v2/pricing?hl=fr
+Cloud Console https://developers.google.com/translate/v2/pricing
 
 ## Installation
 
@@ -20,23 +20,10 @@ Installation is a quick 3 step process:
 
 ### Step 1: Download PryonGoogleTranslatorBundle using composer
 
-Add PryonGoogleTranslatorBundle in your composer.json:
-
-```js
-{
-    "require": {
-        "zeliard91/google-translator-bundle": "dev-master"
-    }
-}
-```
-
-Now tell composer to download the bundle by running the command:
-
 ``` bash
-$ php composer.phar update zeliard91/google-translator-bundle
+php composer.phar require zeliard91/google-translator-bundle
 ```
 
-Composer will install the bundle to your project's `vendor/zeliard91/google-translator-bundle` directory.
 
 ### Step 2: Enable the bundle
 
@@ -55,7 +42,7 @@ public function registerBundles()
 }
 ```
 
-### Step3: Add your Google API Key in configuration
+### Step 3: Add your Google API Key in configuration
 
 ``` yaml
 # app/config/config.yml
@@ -76,19 +63,19 @@ API in REST.
 ``` php
 <?php
 
-$languages = $this -> get('pryon.google.translator') -> getSupportedLanguages();
-// -> ['en','fr','de','it',...]
+$languages = $this->get('pryon.google.translator')->getSupportedLanguages();
+//->['en','fr','de','it',...]
 ```
 
 #### Translate sentences
 ``` php
 <?php
 
-$translation = $this -> get('pryon.google.translator') -> translate('en','fr','I love Symfony');
-// -> "J'adore Symfony"
+$translation = $this->get('pryon.google.translator')->translate('en','fr','I love Symfony');
+//->"J'adore Symfony"
 
-$translations = $this -> get('pryon.google.translator') -> translate('en','fr', array('I love Symfony', 'I like PHP'));
-// -> ["J'adore Symfony", "J'aime PHP"]
+$translations = $this->get('pryon.google.translator')->translate('en','fr', array('I love Symfony', 'I like PHP'));
+//->["J'adore Symfony", "J'aime PHP"]
 ```
 
 Be aware that Google restricts the use of this service by limiting the size of the query 
@@ -106,11 +93,20 @@ It is basically the same as the core "language" Form Type except from the choice
 
 ``` php
 <?php
-// in your buildForm
-    ->add('source', 'translatorlanguage', array(
-        'required' => true,
-        'label'    => 'Source language'
-    ))
+
+use Pryon\GoogleTranslatorBundle\Form\Type\LanguageType;
+use Symfony\Component\Form\FormBuilderInterface;
+
+public function buildForm(FormBuilderInterface $builder, array $options)
+{
+    $builder
+        // ...
+        ->add('source', LanguageType::class, array(
+            'required' => true,
+            'label' => 'Source language'
+        ))
+    ;
+}
 ```
 
 ## Cache
@@ -127,10 +123,27 @@ pryon_google_translator:
     cache: 
         # Specify your doctrine cache service
         service: pryon.google.translator.array_cache_provider
-        # Define
-        cache_calls:
+        calls:
             # get available languages method
             languages: true
             # translate method
             translate: false
 ```
+
+
+## HTTP Client Options
+
+You can define default HTTP headesr for the REST client hitting the Google API : 
+
+``` yaml
+# app/config/config.yml
+
+pryon_google_translator:
+    # ...
+    client_options:
+        headers:
+            Referer: %router.request_context.scheme%://%router.request_context.host%%router.request_context.base_url%
+            User-Agent: Mr Robot
+```
+
+See [Guzzle doc](http://guzzle.readthedocs.io/en/latest/request-options.html#headers) for more information.

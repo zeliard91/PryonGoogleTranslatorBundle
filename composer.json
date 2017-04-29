@@ -1,7 +1,7 @@
 {
     "name": "zeliard91/google-translator-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony 2 service designed to work with Google Translate API",
+    "description": "Symfony service designed to work with Google Translate API",
     "keywords": [ "zeliard91", "translate", "google", "API"],
     "homepage": "https://github.com/zeliard91/PryonGoogleTranslatorBundle",
     "license": "MIT",
@@ -13,13 +13,16 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "ext-curl": "*",
+        "php": ">=5.5.0",
+        "guzzlehttp/guzzle": "^6.2",
         "symfony/framework-bundle": "~2.3|~3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
-        "symfony/monolog-bundle": "~2.3|~3.0"
+        "symfony/monolog-bundle": "~2.3|~3.0",
+        "symfony/form": "~2.3|~3.0",
+        "symfony/translation": "~2.3|~3.0",
+        "symfony/validator": "~2.3|~3.0"
     },
     "suggest": {
         "monolog/monolog": "Allows more advanced logging of the application flow"

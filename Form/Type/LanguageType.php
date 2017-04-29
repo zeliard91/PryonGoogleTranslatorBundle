@@ -4,10 +4,12 @@
  */
 namespace Pryon\GoogleTranslatorBundle\Form\Type;
 
+use Pryon\GoogleTranslatorBundle\Service\GoogleTranslator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Intl\Intl;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Pryon\GoogleTranslatorBundle\Service\GoogleTranslator;
 
 class LanguageType extends AbstractType
 {
@@ -38,6 +40,10 @@ class LanguageType extends AbstractType
             $collator->asort($this->choices);
         }
 
+        if (-1 !== version_compare(Kernel::VERSION, '2.8')) {
+            $this->choices = array_flip($this->choices);
+        }
+
         return $this->choices;
     }
 
@@ -56,7 +62,11 @@ class LanguageType extends AbstractType
      */
     public function getParent()
     {
-        return 'choice';
+        if (-1 == version_compare(Kernel::VERSION, '2.8')) {
+            return 'choice';
+        } else {
+            return ChoiceType::class;
+        }
     }
 
     /**
