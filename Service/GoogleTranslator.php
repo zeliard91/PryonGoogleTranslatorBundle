@@ -4,6 +4,7 @@ namespace Pryon\GoogleTranslatorBundle\Service;
 
 use Doctrine\Common\Cache\CacheProvider;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -32,14 +33,14 @@ class GoogleTranslator
     /**
      * Guzzle Client.
      *
-     * @var GuzzleHttp\ClientInterface
+     * @var \GuzzleHttp\ClientInterface
      */
     private $client;
 
     /**
      * Cache Provider.
      *
-     * @var Doctrine\Common\Cache\CacheProvider
+     * @var \Doctrine\Common\Cache\CacheProvider
      */
     private $cacheProvider;
 
@@ -98,7 +99,7 @@ class GoogleTranslator
     protected function getCacheValue($method, $params = array())
     {
         if (!isset($this->cacheCalls[$method]) || $this->cacheCalls[$method] !== true) {
-            return;
+            return null;
         }
         $id = $this->getCacheId($method, $params);
 
@@ -124,11 +125,13 @@ class GoogleTranslator
      * @param string $method
      * @param mixed  $value
      * @param array  $params
+     *
+     * @return bool
      */
     protected function setCacheValue($method, $value, $params = array())
     {
         if (!isset($this->cacheCalls[$method]) || $this->cacheCalls[$method] !== true) {
-            return;
+            return false;
         }
 
         return $this->cacheProvider->save($this->getCacheId($method, $params), $value);
@@ -137,11 +140,15 @@ class GoogleTranslator
     /**
      * Call API with curl.
      *
-     * @param [type] $fonction [description]
+     * @param string $function
+     * @param array $params
+     * @param string $method
      *
-     * @return [type] [description]
+     * @return mixed array or string
+     *
+     * @throws \Exception
      */
-    private function call($fonction, $params = array(), $method = 'GET')
+    private function call($function, $params = array(), $method = 'GET')
     {
         $params['key'] = $this->apiKey;
 
@@ -155,9 +162,9 @@ class GoogleTranslator
         }
 
         try {
-            $response = $this->client->request($method, self::URL.$fonction, $clientParams);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->logger->error('REST Exception', ['e' => $e, 'url' => self::URL.$fonction, 'params' => $clientParams]);
+            $response = $this->client->request($method, self::URL.$function, $clientParams);
+        } catch (RequestException $e) {
+            $this->logger->error('REST Exception', ['e' => $e, 'url' => self::URL.$function, 'params' => $clientParams]);
             $message = $e->getResponse()->getReasonPhrase();
 
             $json = json_decode($e->getResponse()->getBody());
@@ -177,6 +184,8 @@ class GoogleTranslator
      * @param \Psr\Http\Message\ResponseInterface $response
      *
      * @return mixed array or string
+     *
+     * @throws \Exception
      */
     private function handlingCallResponse(ResponseInterface $response)
     {
@@ -187,8 +196,8 @@ class GoogleTranslator
         $json = json_decode($response->getBody());
 
         if (is_null($json)) {
-            $this->logger->error('Unable to decode response : '.$response);
-            throw new \Exception('Unable to decode response : '.$response);
+            $this->logger->error('Unable to decode response : '.$response->getBody());
+            throw new \Exception('Unable to decode response : '.$response->getBody());
         }
         if (!isset($json->data)) {
             if (isset($json->error, $json->error->message)) {
@@ -207,6 +216,8 @@ class GoogleTranslator
      * Return supported languages.
      *
      * @return array
+     *
+     * @throws \Exception
      */
     public function getSupportedLanguages()
     {
@@ -273,6 +284,8 @@ class GoogleTranslator
      * @param string       $method GET|POST
      *
      * @return array
+     *
+     * @throws \Exception
      */
     private function handleTranslateResponse($source, $target, $text, $method = 'GET')
     {
