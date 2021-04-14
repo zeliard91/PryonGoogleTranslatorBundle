@@ -8,8 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Symfony\Component\Routing\RouteCollectionBuilder;
 
-class TestKernel extends Kernel
+abstract class AbstractTestKernel extends Kernel
 {
     use MicroKernelTrait;
 
@@ -61,5 +63,21 @@ class TestKernel extends Kernel
     public function getLogDir(): string
     {
         return sys_get_temp_dir().'/logs'.spl_object_hash($this);
+    }
+}
+
+if (Kernel::VERSION_ID < 50100) {
+    class TestKernel extends AbstractTestKernel {
+        protected function configureRoutes(RouteCollectionBuilder $routes): void
+        {
+            $routes->add('/foo', 'kernel:'.(parent::VERSION_ID >= 40100 ? ':' : '').'renderFoo');
+        }
+    }
+} else {
+    class TestKernel extends AbstractTestKernel {
+        protected function configureRoutes(RoutingConfigurator $routes): void
+        {
+            $routes->add('/foo', 'kernel:'.(parent::VERSION_ID >= 40100 ? ':' : '').'renderFoo');
+        }
     }
 }
