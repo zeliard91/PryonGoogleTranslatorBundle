@@ -7,9 +7,8 @@ namespace Pryon\GoogleTranslatorBundle\Form\Type;
 use Pryon\GoogleTranslatorBundle\Service\GoogleTranslator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Intl\Intl;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Intl\Languages;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LanguageType extends AbstractType
 {
@@ -32,7 +31,7 @@ class LanguageType extends AbstractType
         if (is_null($this->choices)) {
             $this->choices = array();
             $supportedLanguages = $this->Translator->getSupportedLanguages();
-            $labelLanguages = Intl::getLanguageBundle()->getLanguageNames();
+            $labelLanguages = Languages::getNames();
             foreach ($supportedLanguages as $language) {
                 if (isset($labelLanguages[$language])) {
                     $this->choices[$language] = $labelLanguages[$language];
@@ -41,10 +40,7 @@ class LanguageType extends AbstractType
             $collator = new \Collator(\Locale::getDefault());
             $collator->asort($this->choices);
         }
-
-        if (-1 !== version_compare(Kernel::VERSION, '2.8')) {
-            $this->choices = array_flip($this->choices);
-        }
+        $this->choices = array_flip($this->choices);
 
         return $this->choices;
     }
@@ -52,7 +48,7 @@ class LanguageType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'choices' => $this->getChoices(),
@@ -64,11 +60,7 @@ class LanguageType extends AbstractType
      */
     public function getParent()
     {
-        if (-1 == version_compare(Kernel::VERSION, '2.8')) {
-            return 'choice';
-        } else {
-            return ChoiceType::class;
-        }
+        return ChoiceType::class;
     }
 
     /**

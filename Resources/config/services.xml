@@ -6,7 +6,6 @@
 
     
     <parameters>
-        <parameter key="pryon_google_translator.translator.class">Pryon\GoogleTranslatorBundle\Service\GoogleTranslator</parameter>
         <parameter key="pryon_google_translator.translatorlanguage.class">Pryon\GoogleTranslatorBundle\Form\Type\LanguageType</parameter>
         <parameter key="pryon_google_translator.google_api_key" />
         <parameter key="pryon_google_translator.cache_provider_class">Doctrine\Common\Cache\ArrayCache</parameter>
@@ -19,7 +18,7 @@
             <argument>%pryon_google_translator.client_options%</argument>
         </service>
 
-        <service id="pryon.google.translator" class="%pryon_google_translator.translator.class%">
+        <service id="Pryon\GoogleTranslatorBundle\Service\GoogleTranslator" public="true">
             <argument>%pryon_google_translator.google_api_key%</argument>
             <argument type="service" id="pryon.google.translator.http_client" />
             <argument type="service" id="logger" on-invalid="ignore" />
@@ -29,11 +28,13 @@
                 <argument>%pryon_google_translator.cache_calls%</argument>
             </call>
         </service>
+        <service id="pryon.google.translator" alias="Pryon\GoogleTranslatorBundle\Service\GoogleTranslator" public="true" />
 
-        <service id="form.type.translatorlanguage" class="%pryon_google_translator.translatorlanguage.class%">
+        <service id="Pryon\GoogleTranslatorBundle\Form\Type\LanguageType" public="true">
             <tag name="form.type" alias="translatorlanguage" />
-            <argument type="service" id="pryon.google.translator" />  
+            <argument type="service" id="Pryon\GoogleTranslatorBundle\Service\GoogleTranslator" />  
         </service>
+        <service id="form.type.translatorlanguage" alias="Pryon\GoogleTranslatorBundle\Form\Type\LanguageType" public="true"/>
     </services>
     
 </container>

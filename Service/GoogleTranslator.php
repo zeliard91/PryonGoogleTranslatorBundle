@@ -5,6 +5,7 @@ namespace Pryon\GoogleTranslatorBundle\Service;
 use Doctrine\Common\Cache\CacheProvider;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Query;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -157,7 +158,7 @@ class GoogleTranslator
         if ('GET' === $method) {
             $clientParams['query'] = $params;
         } else {
-            $clientParams['body'] = \GuzzleHttp\Psr7\build_query($params);
+            $clientParams['body'] = Query::build($params);
             $clientParams['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 

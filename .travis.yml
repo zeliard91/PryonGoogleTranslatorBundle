@@ -1,16 +1,13 @@
 language: php
 
 php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4
 
 env: 
-  - SYMFONY_VERSION=2.3.*
-  - SYMFONY_VERSION=2.7.*
-  - SYMFONY_VERSION=2.8.*
-  - SYMFONY_VERSION=3.*
+  - SYMFONY_VERSION=^4.4
+  - SYMFONY_VERSION=^5.2
 
 cache:
     directories:
@@ -21,9 +18,9 @@ before_install:
   - phpenv config-rm xdebug.ini || true
   - composer require --no-update symfony/symfony:${SYMFONY_VERSION}
 
-install: composer update --prefer-dist
+install: COMPOSER_MEMORY_LIMIT=-1 composer update --prefer-dist
 
-script: vendor/bin/phpunit
+script: vendor/bin/simple-phpunit
 
 notifications:
   email:
